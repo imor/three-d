@@ -31,6 +31,11 @@ pub struct RenderStates {
     /// Defines whether the triangles that are backfacing, frontfacing or both should be skipped in a render call.
     ///
     pub cull: Cull,
+
+    ///
+    /// Defines which primitive to use in a draw call
+    ///
+    pub draw_primitive: DrawPrimitive,
 }
 
 ///
@@ -239,4 +244,45 @@ pub enum BlendEquationType {
     ReverseSubtract,
     Max,
     Min,
+}
+
+///
+/// The primitive to draw in a draw call
+///
+#[allow(missing_docs)]
+#[derive(Debug, Copy, Clone, Default)]
+pub enum DrawPrimitive {
+    Points,
+    LineStrip,
+    LineLoop,
+    Lines,
+    LineStripAdjacency,
+    LinesAdjacency,
+    TriangleStrip,
+    TriangleFan,
+    #[default]
+    Triangles,
+    TriangleStripAdjacency,
+    TrianglesAdjacency,
+    Patches,
+}
+
+impl DrawPrimitive {
+    /// converts DrawPrimitive into opengl draw mode
+    pub fn into_mode(self) -> u32 {
+        match self {
+            DrawPrimitive::Points => crate::context::POINTS,
+            DrawPrimitive::LineStrip => crate::context::LINE_STRIP,
+            DrawPrimitive::LineLoop => crate::context::LINE_LOOP,
+            DrawPrimitive::Lines => crate::context::LINES,
+            DrawPrimitive::LineStripAdjacency => crate::context::LINE_STRIP_ADJACENCY,
+            DrawPrimitive::LinesAdjacency => crate::context::LINES_ADJACENCY,
+            DrawPrimitive::TriangleStrip => crate::context::TRIANGLE_STRIP,
+            DrawPrimitive::TriangleFan => crate::context::TRIANGLE_FAN,
+            DrawPrimitive::Triangles => crate::context::TRIANGLES,
+            DrawPrimitive::TriangleStripAdjacency => crate::context::TRIANGLE_STRIP_ADJACENCY,
+            DrawPrimitive::TrianglesAdjacency => crate::context::TRIANGLES_ADJACENCY,
+            DrawPrimitive::Patches => crate::context::PATCHES,
+        }
+    }
 }

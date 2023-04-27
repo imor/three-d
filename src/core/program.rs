@@ -426,7 +426,7 @@ impl Program {
         self.use_program();
         unsafe {
             self.context
-                .draw_arrays(crate::context::TRIANGLES, 0, count as i32);
+                .draw_arrays(render_states.draw_primitive.into_mode(), 0, count as i32);
             for location in self.attributes.values() {
                 self.context.disable_vertex_attrib_array(*location);
             }
@@ -456,7 +456,7 @@ impl Program {
         self.use_program();
         unsafe {
             self.context.draw_arrays_instanced(
-                crate::context::TRIANGLES,
+                render_states.draw_primitive.into_mode(),
                 0,
                 count as i32,
                 instance_count as i32,
@@ -515,7 +515,7 @@ impl Program {
         element_buffer.bind();
         unsafe {
             self.context.draw_elements(
-                crate::context::TRIANGLES,
+                render_states.draw_primitive.into_mode(),
                 count as i32,
                 element_buffer.data_type(),
                 first as i32,
@@ -576,7 +576,7 @@ impl Program {
         element_buffer.bind();
         unsafe {
             self.context.draw_elements_instanced(
-                crate::context::TRIANGLES,
+                render_states.draw_primitive.into_mode(),
                 count as i32,
                 element_buffer.data_type(),
                 first as i32,
