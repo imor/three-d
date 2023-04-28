@@ -18,6 +18,10 @@ mod fly_control;
 #[doc(inline)]
 pub use fly_control::*;
 
+mod two_d_control;
+#[doc(inline)]
+pub use two_d_control::*;
+
 pub use three_d_asset::PixelPoint as PhysicalPoint;
 
 ///

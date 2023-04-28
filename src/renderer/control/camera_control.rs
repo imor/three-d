@@ -63,6 +63,11 @@ pub enum CameraAction {
         /// The maximum distance to the target.
         max: f32,
     },
+    /// Zooms towards the given target on the xy plane.
+    Zoom2D {
+        /// The target of the zoom.
+        target: Vec3,
+    },
 }
 
 impl std::default::Default for CameraAction {
@@ -182,6 +187,9 @@ impl CameraControl {
                 max,
             } => {
                 camera.zoom_towards(&target, speed * x, min, max);
+            }
+            CameraAction::Zoom2D { target } => {
+                camera.zoom_towards_2d(&target, x.into());
             }
             CameraAction::None => {}
         }

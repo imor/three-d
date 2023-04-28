@@ -53,6 +53,8 @@ pub fn main() {
         },
     );
 
+    let mut control = TwoDControl::new(height);
+
     let mut mesh = Gm::new(
         Mesh::new(
             &context,
@@ -73,34 +75,11 @@ pub fn main() {
     mesh.set_transformation(Mat4::from_scale(10.0));
 
     // main loop
-    window.render_loop(move |frame_input| {
+    window.render_loop(move |mut frame_input| {
         let mut redraw = frame_input.first_frame;
         redraw |= camera.set_viewport(frame_input.viewport);
 
-        for event in frame_input.events.iter() {
-            match event {
-                Event::MouseMotion { delta, button, .. } => {
-                    if *button == Some(MouseButton::Left) {
-                        let pan_factor = height / camera.viewport().height as f32;
-                        let speed = pan_factor * camera.position().z.abs();
-                        let right = camera.right_direction();
-                        let up = right.cross(camera.view_direction());
-                        let delta = -right * speed * delta.0 + up * speed * delta.1;
-                        camera.translate(&delta);
-                        redraw = true;
-                    }
-                }
-                Event::MouseWheel {
-                    delta, position, ..
-                } => {
-                    let mut target = camera.position_at_pixel(position);
-                    target.z = 0.0;
-                    camera.zoom_towards_2d(&target, delta.1.into());
-                    redraw = true;
-                }
-                _ => {}
-            }
-        }
+        redraw |= control.handle_events(&mut camera, &mut frame_input.events);
 
         if redraw {
             frame_input
