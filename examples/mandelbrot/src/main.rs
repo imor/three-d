@@ -1,4 +1,5 @@
 use three_d::*;
+use three_d_asset::ZoomConfig;
 
 struct MandelbrotMaterial {}
 
@@ -35,15 +36,21 @@ pub fn main() {
     .unwrap();
     let context = window.gl();
 
+    let height = 2.5;
     // Renderer
-    let mut camera = Camera::new_orthographic(
+    let mut camera = Camera::new_orthographic_with_zoom_config(
         window.viewport(),
         vec3(0.0, 0.0, 1.0),
         vec3(0.0, 0.0, 0.0),
         vec3(0.0, 1.0, 0.0),
-        2.5,
+        height,
         0.0,
         100.0,
+        ZoomConfig {
+            max_zoom_ins: 20,
+            max_zoom_outs: 10,
+            ..ZoomConfig::default()
+        },
     );
 
     let mut mesh = Gm::new(
@@ -74,7 +81,7 @@ pub fn main() {
             match event {
                 Event::MouseMotion { delta, button, .. } => {
                     if *button == Some(MouseButton::Left) {
-                        let pan_factor = 0.00345;
+                        let pan_factor = height / camera.viewport().height as f32;
                         let speed = pan_factor * camera.position().z.abs();
                         let right = camera.right_direction();
                         let up = right.cross(camera.view_direction());
@@ -86,16 +93,9 @@ pub fn main() {
                 Event::MouseWheel {
                     delta, position, ..
                 } => {
-                    let distance = camera.position().z.abs();
                     let mut target = camera.position_at_pixel(position);
                     target.z = 0.0;
-                    const ZOOM_SENSITIVITY: f32 = 0.025;
-                    camera.zoom_towards(
-                        &target,
-                        distance * ZOOM_SENSITIVITY * delta.1,
-                        0.005,
-                        100.0,
-                    );
+                    camera.zoom_towards_2d(&target, delta.1.into());
                     redraw = true;
                 }
                 _ => {}
