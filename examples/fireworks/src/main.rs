@@ -37,6 +37,7 @@ impl Material for FireworksMaterial {
             },
             depth_test: DepthTest::LessOrEqual,
             write_mask: WriteMask::COLOR,
+            ..Default::default()
         }
     }
     fn material_type(&self) -> MaterialType {
