@@ -74,17 +74,7 @@ impl Buffer {
 
     pub fn fill<T: BufferDataType>(&mut self, data: &[T]) {
         self.bind();
-        unsafe {
-            self.context.buffer_data_u8_slice(
-                crate::context::ARRAY_BUFFER,
-                to_byte_slice(data),
-                if self.attribute_count > 0 {
-                    crate::context::DYNAMIC_DRAW
-                } else {
-                    crate::context::STATIC_DRAW
-                },
-            );
-        }
+        self.buffer_data(data);
         self.unbind();
         self.attribute_count = data.len() as u32;
         self.data_type = T::data_type();
@@ -106,6 +96,20 @@ impl Buffer {
     pub fn unbind(&self) {
         unsafe {
             self.context.bind_buffer(crate::context::ARRAY_BUFFER, None);
+        }
+    }
+
+    fn buffer_data<T: BufferDataType>(&self, data: &[T]) {
+        unsafe {
+            self.context.buffer_data_u8_slice(
+                crate::context::ARRAY_BUFFER,
+                to_byte_slice(data),
+                if self.attribute_count > 0 {
+                    crate::context::DYNAMIC_DRAW
+                } else {
+                    crate::context::STATIC_DRAW
+                },
+            );
         }
     }
 }
