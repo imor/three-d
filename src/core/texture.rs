@@ -165,7 +165,7 @@ use crate::core::*;
 // COMMON TEXTURE FUNCTIONS
 
 fn generate(context: &Context) -> crate::context::Texture {
-    unsafe { context.create_texture().expect("Failed creating texture") }
+    unsafe { context.create_texture().expect("Failed to create texture") }
 }
 
 fn set_parameters(
