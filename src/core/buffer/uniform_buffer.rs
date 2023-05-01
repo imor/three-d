@@ -6,7 +6,7 @@ use crate::core::*;
 ///
 pub struct UniformBuffer {
     context: Context,
-    id: crate::context::Buffer,
+    inner: crate::context::Buffer,
     offsets: Vec<usize>,
     data: Vec<f32>,
 }
@@ -19,7 +19,7 @@ impl UniformBuffer {
     /// The variables are initialized to 0.
     ///
     pub fn new(context: &Context, sizes: &[u32]) -> UniformBuffer {
-        let id = unsafe { context.create_buffer().expect("Failed to create buffer") };
+        let buffer = unsafe { context.create_buffer().expect("Failed to create buffer") };
 
         let mut offsets = Vec::new();
         let mut length = 0;
@@ -29,7 +29,7 @@ impl UniformBuffer {
         }
         let buffer = UniformBuffer {
             context: context.clone(),
-            id,
+            inner: buffer,
             offsets,
             data: vec![0.0; length],
         };
@@ -40,7 +40,7 @@ impl UniformBuffer {
     pub(crate) fn bind(&self, id: u32) {
         unsafe {
             self.context
-                .bind_buffer_base(crate::context::UNIFORM_BUFFER, id, Some(self.id))
+                .bind_buffer_base(crate::context::UNIFORM_BUFFER, id, Some(self.inner))
         };
     }
 
@@ -99,7 +99,7 @@ impl UniformBuffer {
     fn send(&self) {
         unsafe {
             self.context
-                .bind_buffer(crate::context::UNIFORM_BUFFER, Some(self.id));
+                .bind_buffer(crate::context::UNIFORM_BUFFER, Some(self.inner));
             self.context.buffer_data_u8_slice(
                 crate::context::UNIFORM_BUFFER,
                 to_byte_slice(&self.data),
@@ -114,7 +114,7 @@ impl UniformBuffer {
 impl Drop for UniformBuffer {
     fn drop(&mut self) {
         unsafe {
-            self.context.delete_buffer(self.id);
+            self.context.delete_buffer(self.inner);
         }
     }
 }
