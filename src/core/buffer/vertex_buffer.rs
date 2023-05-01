@@ -55,6 +55,10 @@ impl VertexBuffer {
         self.buffer.bind();
     }
 
+    pub(in crate::core) fn unbind(&self) {
+        self.buffer.unbind();
+    }
+
     pub(in crate::core) fn data_type(&self) -> u32 {
         self.buffer.data_type
     }

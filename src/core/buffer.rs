@@ -84,8 +84,8 @@ impl Buffer {
                     crate::context::STATIC_DRAW
                 },
             );
-            self.context.bind_buffer(crate::context::ARRAY_BUFFER, None);
         }
+        self.unbind();
         self.attribute_count = data.len() as u32;
         self.data_type = T::data_type();
         self.data_size = T::size();
@@ -100,6 +100,12 @@ impl Buffer {
         unsafe {
             self.context
                 .bind_buffer(crate::context::ARRAY_BUFFER, Some(self.inner));
+        }
+    }
+
+    pub fn unbind(&self) {
+        unsafe {
+            self.context.bind_buffer(crate::context::ARRAY_BUFFER, None);
         }
     }
 }

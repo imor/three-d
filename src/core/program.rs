@@ -360,8 +360,8 @@ impl Program {
                     );
                 }
                 self.context.vertex_attrib_divisor(loc, 0);
-                self.context.bind_buffer(crate::context::ARRAY_BUFFER, None);
             }
+            buffer.unbind();
             self.unuse_program();
         }
     }
@@ -408,8 +408,8 @@ impl Program {
                     );
                 }
                 self.context.vertex_attrib_divisor(loc, 1);
-                self.context.bind_buffer(crate::context::ARRAY_BUFFER, None);
             }
+            buffer.unbind();
             self.unuse_program();
         }
     }
