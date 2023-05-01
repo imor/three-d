@@ -30,7 +30,7 @@ impl ElementBufferDataType for u32 {
 ///
 pub struct ElementBuffer {
     context: Context,
-    id: crate::context::Buffer,
+    inner: crate::context::Buffer,
     count: usize,
     data_type: u32,
 }
@@ -43,7 +43,7 @@ impl ElementBuffer {
         let id = unsafe { context.create_buffer().expect("Failed creating buffer") };
         Self {
             context: context.clone(),
-            id,
+            inner: id,
             count: 0,
             data_type: 0,
         }
@@ -88,7 +88,7 @@ impl ElementBuffer {
     pub(crate) fn bind(&self) {
         unsafe {
             self.context
-                .bind_buffer(crate::context::ELEMENT_ARRAY_BUFFER, Some(self.id));
+                .bind_buffer(crate::context::ELEMENT_ARRAY_BUFFER, Some(self.inner));
         }
     }
 
@@ -117,7 +117,7 @@ impl ElementBuffer {
 impl Drop for ElementBuffer {
     fn drop(&mut self) {
         unsafe {
-            self.context.delete_buffer(self.id);
+            self.context.delete_buffer(self.inner);
         }
     }
 }
