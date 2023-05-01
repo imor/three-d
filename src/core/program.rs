@@ -29,10 +29,10 @@ impl Program {
         unsafe {
             let vert_shader = context
                 .create_shader(crate::context::VERTEX_SHADER)
-                .expect("Failed creating vertex shader");
+                .expect("Failed to create vertex shader");
             let frag_shader = context
                 .create_shader(crate::context::FRAGMENT_SHADER)
-                .expect("Failed creating fragment shader");
+                .expect("Failed to create fragment shader");
 
             let header: &str = if context.version().is_embedded {
                 "#version 300 es
@@ -58,12 +58,12 @@ impl Program {
             context.compile_shader(vert_shader);
             context.compile_shader(frag_shader);
 
-            let id = context.create_program().expect("Failed creating program");
-            context.attach_shader(id, vert_shader);
-            context.attach_shader(id, frag_shader);
-            context.link_program(id);
+            let program = context.create_program().expect("Failed to create program");
+            context.attach_shader(program, vert_shader);
+            context.attach_shader(program, frag_shader);
+            context.link_program(program);
 
-            if !context.get_program_link_status(id) {
+            if !context.get_program_link_status(program) {
                 let log = context.get_shader_info_log(vert_shader);
                 if !log.is_empty() {
                     Err(CoreError::ShaderCompilation(
@@ -80,28 +80,31 @@ impl Program {
                         fragment_shader_source,
                     ))?;
                 }
-                let log = context.get_program_info_log(id);
+                let log = context.get_program_info_log(program);
                 if !log.is_empty() {
                     Err(CoreError::ShaderLink(log))?;
                 }
                 unreachable!();
             }
 
-            context.detach_shader(id, vert_shader);
-            context.detach_shader(id, frag_shader);
+            context.detach_shader(program, vert_shader);
+            context.detach_shader(program, frag_shader);
             context.delete_shader(vert_shader);
             context.delete_shader(frag_shader);
 
             // Init vertex attributes
-            let num_attribs = context.get_active_attributes(id);
+            let num_attribs = context.get_active_attributes(program);
             let mut attributes = HashMap::new();
             for i in 0..num_attribs {
                 if let Some(crate::context::ActiveAttribute { name, .. }) =
-                    context.get_active_attribute(id, i)
+                    context.get_active_attribute(program, i)
                 {
-                    let location = context.get_attrib_location(id, &name).unwrap_or_else(|| {
-                        panic!("Could not get the location of uniform {}", name)
-                    });
+                    let location =
+                        context
+                            .get_attrib_location(program, &name)
+                            .unwrap_or_else(|| {
+                                panic!("Could not get the location of attribute {}", name)
+                            });
                     /*println!(
                         "Attribute location: {}, name: {}, type: {}, size: {}",
                         location, name, atype, size
@@ -111,13 +114,13 @@ impl Program {
             }
 
             // Init uniforms
-            let num_uniforms = context.get_active_uniforms(id);
+            let num_uniforms = context.get_active_uniforms(program);
             let mut uniforms = HashMap::new();
             for i in 0..num_uniforms {
                 if let Some(crate::context::ActiveUniform { name, .. }) =
-                    context.get_active_uniform(id, i)
+                    context.get_active_uniform(program, i)
                 {
-                    if let Some(location) = context.get_uniform_location(id, &name) {
+                    if let Some(location) = context.get_uniform_location(program, &name) {
                         let name = name.split('[').collect::<Vec<_>>()[0].to_string();
                         /*println!(
                             "Uniform location: {:?}, name: {}, type: {}, size: {}",
@@ -130,7 +133,7 @@ impl Program {
 
             Ok(Program {
                 context: context.clone(),
-                inner: id,
+                inner: program,
                 attributes,
                 uniforms,
                 uniform_blocks: RwLock::new(HashMap::new()),
@@ -149,6 +152,7 @@ impl Program {
     /// In the latter case the variable is removed by the shader compiler.
     ///
     pub fn use_uniform<T: UniformDataType>(&self, name: &str, data: T) {
+        self.use_program();
         let location = self.get_uniform_location(name);
         T::send_uniform(&self.context, location, &[data]);
         self.unuse_program();
@@ -173,16 +177,16 @@ impl Program {
     /// In the latter case the variable is removed by the shader compiler.
     ///
     pub fn use_uniform_array<T: UniformDataType>(&self, name: &str, data: &[T]) {
+        self.use_program();
         let location = self.get_uniform_location(name);
         T::send_uniform(&self.context, location, data);
         self.unuse_program();
     }
 
     fn get_uniform_location(&self, name: &str) -> &crate::context::UniformLocation {
-        self.use_program();
         self.uniforms.get(name).unwrap_or_else(|| {
             panic!(
-                "the uniform {} is sent to the shader but not defined or never used",
+                "shader doesn't define or use the uniform '{}' sent to it",
                 name
             )
         })
@@ -303,8 +307,12 @@ impl Program {
             let location = unsafe {
                 self.context
                     .get_uniform_block_index(self.inner, name)
-                    .unwrap_or_else(|| panic!("the uniform block {} is sent to the shader but not defined or never used",
-                        name))
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "shader doesn't define or use the uniform block '{}' sent to it",
+                            name
+                        )
+                    })
             };
             let index = map.len() as u32;
             map.insert(name.to_owned(), (location, index));
@@ -613,7 +621,7 @@ impl Program {
         self.use_program();
         *self.attributes.get(name).unwrap_or_else(|| {
             panic!(
-                "the attribute {} is sent to the shader but not defined or never used",
+                "shader doesn't define or use the attribute '{}' sent to it",
                 name
             )
         })
