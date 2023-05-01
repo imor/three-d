@@ -65,13 +65,7 @@ impl ElementBuffer {
     ///
     pub fn fill<T: ElementBufferDataType>(&mut self, data: &[T]) {
         self.bind();
-        unsafe {
-            self.context.buffer_data_u8_slice(
-                crate::context::ELEMENT_ARRAY_BUFFER,
-                to_byte_slice(data),
-                crate::context::STATIC_DRAW,
-            );
-        }
+        self.buffer_data(data);
         self.unbind();
         self.count = data.len();
         self.data_type = T::data_type();
@@ -102,6 +96,16 @@ impl ElementBuffer {
         unsafe {
             self.context
                 .bind_buffer(crate::context::ELEMENT_ARRAY_BUFFER, None);
+        }
+    }
+
+    fn buffer_data<T: ElementBufferDataType>(&self, data: &[T]) {
+        unsafe {
+            self.context.buffer_data_u8_slice(
+                crate::context::ELEMENT_ARRAY_BUFFER,
+                to_byte_slice(data),
+                crate::context::STATIC_DRAW,
+            );
         }
     }
 
