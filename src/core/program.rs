@@ -312,10 +312,9 @@ impl Program {
         let (location, index) = *self.uniform_blocks.read().unwrap().get(name).unwrap();
         unsafe {
             self.context.uniform_block_binding(self.id, location, index);
-            buffer.bind(index);
-            self.context
-                .bind_buffer(crate::context::UNIFORM_BUFFER, None);
         }
+        buffer.bind(index);
+        buffer.unbind();
     }
 
     ///

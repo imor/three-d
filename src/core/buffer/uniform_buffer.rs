@@ -44,6 +44,13 @@ impl UniformBuffer {
         };
     }
 
+    pub(crate) fn unbind(&self) {
+        unsafe {
+            self.context
+                .bind_buffer(crate::context::UNIFORM_BUFFER, None);
+        };
+    }
+
     ///
     /// Update the values of the variable at the given index with the given data.
     ///
