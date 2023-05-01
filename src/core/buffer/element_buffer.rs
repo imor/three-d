@@ -71,9 +71,8 @@ impl ElementBuffer {
                 to_byte_slice(data),
                 crate::context::STATIC_DRAW,
             );
-            self.context
-                .bind_buffer(crate::context::ELEMENT_ARRAY_BUFFER, None);
         }
+        self.unbind();
         self.count = data.len();
         self.data_type = T::data_type();
     }
@@ -96,6 +95,13 @@ impl ElementBuffer {
         unsafe {
             self.context
                 .bind_buffer(crate::context::ELEMENT_ARRAY_BUFFER, Some(self.id));
+        }
+    }
+
+    pub(crate) fn unbind(&self) {
+        unsafe {
+            self.context
+                .bind_buffer(crate::context::ELEMENT_ARRAY_BUFFER, None);
         }
     }
 

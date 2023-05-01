@@ -520,8 +520,7 @@ impl Program {
                 element_buffer.data_type(),
                 first as i32,
             );
-            self.context
-                .bind_buffer(crate::context::ELEMENT_ARRAY_BUFFER, None);
+            element_buffer.unbind();
 
             for location in self.attributes.values() {
                 self.context.disable_vertex_attrib_array(*location);
@@ -582,8 +581,7 @@ impl Program {
                 first as i32,
                 instance_count as i32,
             );
-            self.context
-                .bind_buffer(crate::context::ELEMENT_ARRAY_BUFFER, None);
+            element_buffer.unbind();
             for location in self.attributes.values() {
                 self.context.disable_vertex_attrib_array(*location);
             }
