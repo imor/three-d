@@ -56,7 +56,7 @@ impl Buffer {
     pub fn new(context: &Context) -> Self {
         Self {
             context: context.clone(),
-            inner: unsafe { context.create_buffer().expect("Failed creating buffer") },
+            inner: unsafe { context.create_buffer().expect("Failed to create buffer") },
             attribute_count: 0,
             data_type: 0,
             data_size: 0,
