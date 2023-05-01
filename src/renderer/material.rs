@@ -65,7 +65,7 @@ pub struct Texture2DRef {
     /// A reference to the texture.
     pub texture: Arc<Texture2D>,
     /// A transformation applied to the uv coordinates before reading a texel value at those uv coordinates.
-    /// This is primarily used in relation to texture atlasing.
+    /// This is primarily used in relation to texture atlassing.
     pub transformation: Mat3,
 }
 
