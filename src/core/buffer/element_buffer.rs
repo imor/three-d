@@ -40,10 +40,10 @@ impl ElementBuffer {
     /// Creates a new empty element buffer.
     ///
     pub fn new(context: &Context) -> Self {
-        let id = unsafe { context.create_buffer().expect("Failed creating buffer") };
+        let buffer = unsafe { context.create_buffer().expect("Failed to create buffer") };
         Self {
             context: context.clone(),
-            inner: id,
+            inner: buffer,
             count: 0,
             data_type: 0,
         }
