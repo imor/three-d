@@ -10,7 +10,7 @@ use std::sync::RwLock;
 ///
 pub struct Program {
     context: Context,
-    id: crate::context::Program,
+    inner: crate::context::Program,
     attributes: HashMap<String, u32>,
     textures: RwLock<HashMap<String, u32>>,
     uniforms: HashMap<String, crate::context::UniformLocation>,
@@ -130,7 +130,7 @@ impl Program {
 
             Ok(Program {
                 context: context.clone(),
-                id,
+                inner: id,
                 attributes,
                 uniforms,
                 uniform_blocks: RwLock::new(HashMap::new()),
@@ -302,7 +302,7 @@ impl Program {
             let mut map = self.uniform_blocks.write().unwrap();
             let location = unsafe {
                 self.context
-                    .get_uniform_block_index(self.id, name)
+                    .get_uniform_block_index(self.inner, name)
                     .unwrap_or_else(|| panic!("the uniform block {} is sent to the shader but not defined or never used",
                         name))
             };
@@ -311,7 +311,8 @@ impl Program {
         };
         let (location, index) = *self.uniform_blocks.read().unwrap().get(name).unwrap();
         unsafe {
-            self.context.uniform_block_binding(self.id, location, index);
+            self.context
+                .uniform_block_binding(self.inner, location, index);
         }
         buffer.bind(index);
         buffer.unbind();
@@ -620,7 +621,7 @@ impl Program {
 
     fn use_program(&self) {
         unsafe {
-            self.context.use_program(Some(self.id));
+            self.context.use_program(Some(self.inner));
         }
     }
 
@@ -634,7 +635,7 @@ impl Program {
 impl Drop for Program {
     fn drop(&mut self) {
         unsafe {
-            self.context.delete_program(self.id);
+            self.context.delete_program(self.inner);
         }
     }
 }
