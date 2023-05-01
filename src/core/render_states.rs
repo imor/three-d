@@ -267,10 +267,9 @@ pub enum DrawPrimitive {
     Patches,
 }
 
-impl DrawPrimitive {
-    /// converts DrawPrimitive into opengl draw mode
-    pub fn into_mode(self) -> u32 {
-        match self {
+impl From<DrawPrimitive> for u32 {
+    fn from(primitive: DrawPrimitive) -> Self {
+        match primitive {
             DrawPrimitive::Points => crate::context::POINTS,
             DrawPrimitive::LineStrip => crate::context::LINE_STRIP,
             DrawPrimitive::LineLoop => crate::context::LINE_LOOP,
