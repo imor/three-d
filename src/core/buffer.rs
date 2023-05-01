@@ -45,7 +45,7 @@ impl<T: BufferDataType + ?Sized> BufferDataType for &T {}
 
 struct Buffer {
     context: Context,
-    id: crate::context::Buffer,
+    inner: crate::context::Buffer,
     attribute_count: u32,
     data_type: u32,
     data_size: u32,
@@ -56,7 +56,7 @@ impl Buffer {
     pub fn new(context: &Context) -> Self {
         Self {
             context: context.clone(),
-            id: unsafe { context.create_buffer().expect("Failed creating buffer") },
+            inner: unsafe { context.create_buffer().expect("Failed creating buffer") },
             attribute_count: 0,
             data_type: 0,
             data_size: 0,
@@ -99,7 +99,7 @@ impl Buffer {
     pub fn bind(&self) {
         unsafe {
             self.context
-                .bind_buffer(crate::context::ARRAY_BUFFER, Some(self.id));
+                .bind_buffer(crate::context::ARRAY_BUFFER, Some(self.inner));
         }
     }
 }
@@ -107,7 +107,7 @@ impl Buffer {
 impl Drop for Buffer {
     fn drop(&mut self) {
         unsafe {
-            self.context.delete_buffer(self.id);
+            self.context.delete_buffer(self.inner);
         }
     }
 }
