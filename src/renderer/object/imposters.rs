@@ -174,7 +174,7 @@ impl ImpostersMaterial {
             let height = max.y - min.y;
             let texture_width = (max_texture_size as f32 * (width / height).min(1.0)) as u32;
             let texture_height = (max_texture_size as f32 * (height / width).min(1.0)) as u32;
-            let viewport = Viewport::new_at_origo(texture_width, texture_height);
+            let viewport = Viewport::new_at_origin(texture_width, texture_height);
             let center = 0.5 * min + 0.5 * max;
             let mut camera = Camera::new_orthographic(
                 viewport,

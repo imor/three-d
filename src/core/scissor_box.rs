@@ -19,7 +19,7 @@ impl ScissorBox {
     ///
     /// Creates a new scissor box which starts at origo (x and y are both zero).
     ///
-    pub fn new_at_origo(width: u32, height: u32) -> Self {
+    pub fn new_at_origin(width: u32, height: u32) -> Self {
         Self {
             x: 0,
             y: 0,

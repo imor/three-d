@@ -34,7 +34,7 @@ impl GUI {
             egui_context: egui::Context::default(),
             painter: RefCell::new(Painter::new(context, "", None).unwrap()),
             output: RefCell::new(None),
-            viewport: Viewport::new_at_origo(1, 1),
+            viewport: Viewport::new_at_origin(1, 1),
             modifiers: Modifiers::default(),
         }
     }

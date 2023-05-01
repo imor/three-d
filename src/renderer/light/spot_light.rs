@@ -71,7 +71,7 @@ impl SpotLight {
         let direction = self.direction;
         let up = compute_up_direction(self.direction);
 
-        let viewport = Viewport::new_at_origo(texture_size, texture_size);
+        let viewport = Viewport::new_at_origin(texture_size, texture_size);
 
         let mut z_far = 0.0f32;
         let mut z_near = f32::MAX;

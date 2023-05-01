@@ -40,7 +40,7 @@ impl FrameInputGenerator {
         Self {
             events: Vec::new(),
             accumulated_time: 0.0,
-            viewport: Viewport::new_at_origo(size.width, size.height),
+            viewport: Viewport::new_at_origin(size.width, size.height),
             window_width,
             window_height,
             device_pixel_ratio,
@@ -120,7 +120,7 @@ impl FrameInputGenerator {
     pub fn handle_winit_window_event(&mut self, event: &WindowEvent) {
         match event {
             WindowEvent::Resized(physical_size) => {
-                self.viewport = Viewport::new_at_origo(physical_size.width, physical_size.height);
+                self.viewport = Viewport::new_at_origin(physical_size.width, physical_size.height);
                 let logical_size = physical_size.to_logical(self.device_pixel_ratio);
                 self.window_width = logical_size.width;
                 self.window_height = logical_size.height;
@@ -130,7 +130,8 @@ impl FrameInputGenerator {
                 new_inner_size,
             } => {
                 self.device_pixel_ratio = *scale_factor;
-                self.viewport = Viewport::new_at_origo(new_inner_size.width, new_inner_size.height);
+                self.viewport =
+                    Viewport::new_at_origin(new_inner_size.width, new_inner_size.height);
                 let logical_size = new_inner_size.to_logical(self.device_pixel_ratio);
                 self.window_width = logical_size.width;
                 self.window_height = logical_size.height;

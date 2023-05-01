@@ -65,7 +65,7 @@ pub fn main() {
         .unwrap();
 
         let camera = Camera::new_perspective(
-            Viewport::new_at_origo(1, 1),
+            Viewport::new_at_origin(1, 1),
             vec3(0.0, 0.0, 2.0 + i as f32 * 4.0),
             vec3(0.0, 0.0, 0.0),
             vec3(0.0, 1.0, 0.0),

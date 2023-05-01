@@ -34,7 +34,7 @@ impl<C: TextureDataType> ColorTargetMultisample<C> {
     ///
     pub fn clear(&self, clear_state: ClearState) -> &Self {
         self.clear_partially(
-            ScissorBox::new_at_origo(self.width(), self.height()),
+            ScissorBox::new_at_origin(self.width(), self.height()),
             clear_state,
         )
     }

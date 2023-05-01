@@ -1,7 +1,7 @@
 use three_d::*;
 
 fn main() {
-    let viewport = Viewport::new_at_origo(1280, 720);
+    let viewport = Viewport::new_at_origin(1280, 720);
 
     // Create a headless graphics context
     let context = HeadlessContext::new().unwrap();

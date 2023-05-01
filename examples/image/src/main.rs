@@ -67,7 +67,7 @@ pub async fn run() {
             },
         );
 
-        let viewport = Viewport::new_at_origo(
+        let viewport = Viewport::new_at_origin(
             frame_input.viewport.width - (panel_width * frame_input.device_pixel_ratio) as u32,
             frame_input.viewport.height,
         );

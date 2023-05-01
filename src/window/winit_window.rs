@@ -298,7 +298,7 @@ impl Window {
     ///
     pub fn viewport(&self) -> Viewport {
         let (w, h): (u32, u32) = self.window.inner_size().into();
-        Viewport::new_at_origo(w, h)
+        Viewport::new_at_origin(w, h)
     }
 
     ///

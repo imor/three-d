@@ -58,7 +58,7 @@ impl DirectionalLight {
     ) {
         let up = compute_up_direction(self.direction);
 
-        let viewport = Viewport::new_at_origo(texture_size, texture_size);
+        let viewport = Viewport::new_at_origin(texture_size, texture_size);
         let mut aabb = AxisAlignedBoundingBox::EMPTY;
         for geometry in geometries.clone() {
             aabb.expand_with_aabb(&geometry.aabb());

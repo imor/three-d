@@ -26,7 +26,7 @@ impl FxaaEffect {
                 cull: Cull::Back,
                 ..Default::default()
             },
-            Viewport::new_at_origo(color_texture.width(), color_texture.height()),
+            Viewport::new_at_origin(color_texture.width(), color_texture.height()),
             |program| {
                 color_texture.use_uniforms(program);
                 let (w, h) = color_texture.resolution();
