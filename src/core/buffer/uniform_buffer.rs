@@ -19,7 +19,7 @@ impl UniformBuffer {
     /// The variables are initialized to 0.
     ///
     pub fn new(context: &Context, sizes: &[u32]) -> UniformBuffer {
-        let id = unsafe { context.create_buffer().expect("Failed creating buffer") };
+        let id = unsafe { context.create_buffer().expect("Failed to create buffer") };
 
         let mut offsets = Vec::new();
         let mut length = 0;
