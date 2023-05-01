@@ -224,6 +224,7 @@ impl Context {
             BlendMultiplierType::SrcAlphaSaturate => crate::context::SRC_ALPHA_SATURATE,
         }
     }
+
     fn blend_const_from_equation(equation: BlendEquationType) -> u32 {
         match equation {
             BlendEquationType::Add => crate::context::FUNC_ADD,
