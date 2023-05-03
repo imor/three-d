@@ -28,6 +28,10 @@ mod line;
 #[doc(inline)]
 pub use line::*;
 
+mod line_segment;
+#[doc(inline)]
+pub use line_segment::*;
+
 mod rectangle;
 #[doc(inline)]
 pub use rectangle::*;
