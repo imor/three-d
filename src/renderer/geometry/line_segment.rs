@@ -63,11 +63,7 @@ impl LineSegment {
         program.use_vertex_attribute("position", &self.positions);
         program.use_vertex_attribute("prev", &self.prev_positions);
         // program.use_vertex_attribute("color", &colors);
-        program.draw_arrays(
-            RenderStates::default(),
-            viewport,
-            self.positions.vertex_count(),
-        );
+        program.draw_arrays(render_states, viewport, self.positions.vertex_count());
     }
 
     fn positions(context: &Context, start: &PhysicalPoint, end: &PhysicalPoint) -> VertexBuffer {
