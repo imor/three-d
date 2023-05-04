@@ -7,6 +7,7 @@ pub struct Line2D {
     start: PhysicalPoint,
     end: PhysicalPoint,
     thickness: u32,
+    transformation: Mat4,
     positions: VertexBuffer,
     prev_positions: VertexBuffer,
 }
@@ -31,14 +32,17 @@ impl Line2D {
         let start = start.into();
         let end = end.into();
 
-        Self {
+        let mut line2d = Self {
             context: context.clone(),
             start,
             end,
             thickness,
+            transformation: Mat4::identity(),
             positions: Self::positions(context, &start, &end),
             prev_positions: Self::prev_positions(context, &start, &end),
-        }
+        };
+        line2d.update();
+        line2d
     }
 
     /// Get the start point of the line.
@@ -51,9 +55,43 @@ impl Line2D {
         self.end
     }
 
+    ///
+    /// Change the two end points of the line.
+    ///
+    pub fn set_endpoints(
+        &mut self,
+        start: impl Into<PhysicalPoint>,
+        end: impl Into<PhysicalPoint>,
+    ) {
+        self.start = start.into();
+        self.end = end.into();
+        self.update();
+    }
+
+    ///
+    /// Change the transformation of the line
+    ///
+    pub fn set_transformation(&mut self, transformation: Mat4) {
+        self.transformation = transformation;
+    }
+
+    fn update(&mut self) {
+        let dx = self.end.x - self.start.x;
+        let dy = self.end.y - self.start.y;
+        let length = (dx * dx + dy * dy).sqrt();
+        let c = dx / length;
+        let s = dy / length;
+        let rot = Mat3::new(c, s, 0.0, -s, c, 0.0, 0.0, 0.0, 1.0);
+        self.transformation = to_3d_transformation(
+            Mat3::from_translation(self.start.into())
+                * rot
+                * Mat3::from_nonuniform_scale(length, 1.0),
+        );
+    }
+
     fn draw(&self, program: &Program, render_states: RenderStates, camera: &Camera) {
         let viewport = camera.viewport();
-        program.use_uniform("model", Mat4::identity());
+        program.use_uniform("model", self.transformation);
         program.use_uniform("viewProjection", camera.projection() * camera.view());
         program.use_uniform(
             "resolution",

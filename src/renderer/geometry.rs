@@ -32,6 +32,10 @@ mod line2d;
 #[doc(inline)]
 pub use line2d::*;
 
+mod outline;
+#[doc(inline)]
+pub use outline::*;
+
 mod rectangle;
 #[doc(inline)]
 pub use rectangle::*;
@@ -441,4 +445,26 @@ impl BaseMesh {
             program.use_vertex_attribute("color", colors);
         }
     }
+}
+
+/// Converts a 2d transformation into a 3d transformation
+pub fn to_3d_transformation(transformation_2d: Mat3) -> Mat4 {
+    Mat4::new(
+        transformation_2d.x.x,
+        transformation_2d.x.y,
+        0.0,
+        transformation_2d.x.z,
+        transformation_2d.y.x,
+        transformation_2d.y.y,
+        0.0,
+        transformation_2d.y.z,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        transformation_2d.z.x,
+        transformation_2d.z.y,
+        0.0,
+        transformation_2d.z.z,
+    )
 }
