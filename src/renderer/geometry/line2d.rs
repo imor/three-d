@@ -53,7 +53,6 @@ impl Line2D {
 
     fn draw(&self, program: &Program, render_states: RenderStates, camera: &Camera) {
         let viewport = camera.viewport();
-        // program.use_uniform("model", Mat4::from_angle_y(radians(time * 0.005)));
         program.use_uniform("model", Mat4::identity());
         program.use_uniform("viewProjection", camera.projection() * camera.view());
         program.use_uniform(
@@ -63,10 +62,10 @@ impl Line2D {
         program.use_uniform("thickness", self.thickness as f32);
         program.use_vertex_attribute("position", &self.positions);
         program.use_vertex_attribute("prev", &self.prev_positions);
-        // program.use_vertex_attribute("color", &colors);
         program.draw_arrays(render_states, viewport, self.positions.vertex_count());
     }
 
+    /// Returns the vertex positions of the two triangles making a rectangular line
     fn positions(context: &Context, start: &PhysicalPoint, end: &PhysicalPoint) -> VertexBuffer {
         VertexBuffer::new_with_data(
             context,
@@ -82,6 +81,7 @@ impl Line2D {
         )
     }
 
+    /// Returns the previous vertex positions of the two triangles making a rectangular line
     fn prev_positions(
         context: &Context,
         start: &PhysicalPoint,
@@ -116,7 +116,7 @@ impl Geometry for Line2D {
         let fragment_shader = material.fragment_shader(lights);
         self.context
             .program(
-                include_str!("shaders/line_segment.vert").to_owned(),
+                include_str!("shaders/line2d.vert").to_owned(),
                 fragment_shader.source,
                 |program| {
                     material.use_uniforms(program, camera, lights);
@@ -137,7 +137,7 @@ impl Geometry for Line2D {
         let fragment_shader = material.fragment_shader(lights, color_texture, depth_texture);
         self.context
             .program(
-                include_str!("shaders/line_segment.vert").to_owned(),
+                include_str!("shaders/line2d.vert").to_owned(),
                 fragment_shader.source,
                 |program| {
                     material.use_uniforms(program, camera, lights, color_texture, depth_texture);
