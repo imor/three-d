@@ -10,7 +10,6 @@ pub struct Outline {
     rotation: Radians,
 
     top_left: Vec2,
-    top_right: Vec2,
     bottom_right: Vec2,
     bottom_left: Vec2,
 
@@ -36,7 +35,6 @@ impl Outline {
         let half_width = width / 2.0;
         let half_height = height / 2.0;
         let top_left = vec2(-half_width, half_height);
-        let top_right = vec2(half_width, half_height);
         let bottom_right = vec2(half_width, -half_height);
         let bottom_left = vec2(-half_width, -half_height);
         let zero = Vec2::zero();
@@ -47,7 +45,6 @@ impl Outline {
             center,
             rotation: rotation.into(),
             top_left,
-            top_right,
             bottom_right,
             bottom_left,
             top: Line2D::new(context, zero, one_x, thickness),
