@@ -28,9 +28,9 @@ mod line;
 #[doc(inline)]
 pub use line::*;
 
-mod line_segment;
+mod line2d;
 #[doc(inline)]
-pub use line_segment::*;
+pub use line2d::*;
 
 mod rectangle;
 #[doc(inline)]

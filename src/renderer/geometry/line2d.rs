@@ -1,7 +1,8 @@
 use crate::renderer::*;
 
 /// A line segment whose line thickness remains the same even at different zoom levels.
-pub struct LineSegment {
+/// This is only useful for 2D applications because it is drawn in the xy plane.
+pub struct Line2D {
     context: Context,
     start: PhysicalPoint,
     end: PhysicalPoint,
@@ -10,11 +11,11 @@ pub struct LineSegment {
     prev_positions: VertexBuffer,
 }
 
-// We use a z value of something greater than zero for the LineSegment
+// We use a z value of something greater than zero for Line2D
 // because it is usually drawn over other shapes which have a z value of zero
 const Z: f32 = 0.001;
 
-impl LineSegment {
+impl Line2D {
     /// Construct a new line segment
     pub fn new(
         context: &Context,
@@ -105,7 +106,7 @@ impl LineSegment {
     }
 }
 
-impl Geometry for LineSegment {
+impl Geometry for Line2D {
     fn render_with_material(
         &self,
         material: &dyn Material,
@@ -156,7 +157,7 @@ impl Geometry for LineSegment {
     }
 }
 
-impl<'a> IntoIterator for &'a LineSegment {
+impl<'a> IntoIterator for &'a Line2D {
     type Item = &'a dyn Geometry;
     type IntoIter = std::iter::Once<&'a dyn Geometry>;
 
