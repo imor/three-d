@@ -54,9 +54,6 @@ impl Outline {
             right: Line2D::new(context, zero, one_x, thickness),
             bottom: Line2D::new(context, zero, one_x, thickness),
             left: Line2D::new(context, zero, one_x, thickness),
-            // right: Line2D::new(context, top_right, bottom_right, thickness),
-            // bottom: Line2D::new(context, bottom_right, bottom_left, thickness),
-            // left: Line2D::new(context, bottom_left, top_left, thickness),
         };
         outline
     }
@@ -65,10 +62,6 @@ impl Outline {
     pub fn set_rotation(&mut self, rotation: impl Into<Radians>) {
         self.rotation = rotation.into();
         self.update();
-        // self.top.set_rotation(self.rotation);
-        // self.right.set_rotation(self.rotation);
-        // self.bottom.set_rotation(self.rotation);
-        // self.left.set_rotation(self.rotation);
     }
 
     fn update(&mut self) {
