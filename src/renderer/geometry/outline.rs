@@ -60,6 +60,7 @@ impl Outline {
             bottom: Line2D::new(context, zero, minus_one_x, thickness),
             left: Line2D::new(context, zero, one_y, thickness),
         };
+        outline.update();
         outline
     }
 
