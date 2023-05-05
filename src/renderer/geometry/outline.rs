@@ -10,6 +10,7 @@ pub struct Outline {
     rotation: Radians,
 
     top_left: Vec2,
+    top_right: Vec2,
     bottom_right: Vec2,
     bottom_left: Vec2,
 
@@ -31,26 +32,33 @@ impl Outline {
         height: f32,
         thickness: u32,
     ) -> Self {
-        let center = center.into();
         let half_width = width / 2.0;
         let half_height = height / 2.0;
+
         let top_left = vec2(-half_width, half_height);
+        let top_right = vec2(half_width, half_height);
         let bottom_right = vec2(half_width, -half_height);
         let bottom_left = vec2(-half_width, -half_height);
+
         let zero = Vec2::zero();
         let one_x = vec2(1.0, 0.0);
+        let minus_one_x = vec2(-1.0, 0.0);
+        let one_y = vec2(0.0, 1.0);
+        let minus_one_y = vec2(0.0, -1.0);
+
         let mut outline = Self {
             width,
             height,
-            center,
+            center: center.into(),
             rotation: rotation.into(),
             top_left,
+            top_right,
             bottom_right,
             bottom_left,
             top: Line2D::new(context, zero, one_x, thickness),
-            right: Line2D::new(context, zero, one_x, thickness),
-            bottom: Line2D::new(context, zero, one_x, thickness),
-            left: Line2D::new(context, zero, one_x, thickness),
+            right: Line2D::new(context, zero, minus_one_y, thickness),
+            bottom: Line2D::new(context, zero, minus_one_x, thickness),
+            left: Line2D::new(context, zero, one_y, thickness),
         };
         outline
     }
@@ -61,12 +69,17 @@ impl Outline {
         self.update();
     }
 
+    /// Set the center of the outline.
+    pub fn set_center(&mut self, center: impl Into<PhysicalPoint>) {
+        self.center = center.into();
+        self.update();
+    }
+
     fn update(&mut self) {
         let scale_by_width = Mat3::from_nonuniform_scale(self.width, 1.0);
         let scale_by_height = Mat3::from_nonuniform_scale(self.height, 1.0);
         let translation_to_center = Mat3::from_translation(self.center.into());
         let rotation = Mat3::from_angle_z(self.rotation);
-        let rotation_90 = Mat3::from_angle_z(Rad(std::f32::consts::PI / 2.0));
 
         // Update top line
         let translation_to_corner = Mat3::from_translation(self.top_left);
@@ -76,18 +89,14 @@ impl Outline {
         self.top.set_transformation(transformation);
 
         // Update right line
-        let translation_to_corner = Mat3::from_translation(self.bottom_right);
+        let translation_to_corner = Mat3::from_translation(self.top_right);
         let transformation = to_3d_transformation(
-            translation_to_center
-                * rotation
-                * translation_to_corner
-                * rotation_90
-                * scale_by_height,
+            translation_to_center * rotation * translation_to_corner * scale_by_height,
         );
         self.right.set_transformation(transformation);
 
         // Update bottom line
-        let translation_to_corner = Mat3::from_translation(self.bottom_left);
+        let translation_to_corner = Mat3::from_translation(self.bottom_right);
         let transformation = to_3d_transformation(
             translation_to_center * rotation * translation_to_corner * scale_by_width,
         );
@@ -96,11 +105,7 @@ impl Outline {
         // Update left line
         let translation_to_corner = Mat3::from_translation(self.bottom_left);
         let transformation = to_3d_transformation(
-            translation_to_center
-                * rotation
-                * translation_to_corner
-                * rotation_90
-                * scale_by_height,
+            translation_to_center * rotation * translation_to_corner * scale_by_height,
         );
         self.left.set_transformation(transformation);
     }
