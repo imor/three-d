@@ -80,32 +80,33 @@ impl Outline {
         let scale_by_height = Mat3::from_nonuniform_scale(self.height, 1.0);
         let translation_to_center = Mat3::from_translation(self.center.into());
         let rotation = Mat3::from_angle_z(self.rotation);
+        let rotation_and_translation_to_center = translation_to_center * rotation;
 
         // Update top line
         let translation_to_corner = Mat3::from_translation(self.top_left);
         let transformation = to_3d_transformation(
-            translation_to_center * rotation * translation_to_corner * scale_by_width,
+            rotation_and_translation_to_center * translation_to_corner * scale_by_width,
         );
         self.top.set_transformation(transformation);
 
         // Update right line
         let translation_to_corner = Mat3::from_translation(self.top_right);
         let transformation = to_3d_transformation(
-            translation_to_center * rotation * translation_to_corner * scale_by_height,
+            rotation_and_translation_to_center * translation_to_corner * scale_by_height,
         );
         self.right.set_transformation(transformation);
 
         // Update bottom line
         let translation_to_corner = Mat3::from_translation(self.bottom_right);
         let transformation = to_3d_transformation(
-            translation_to_center * rotation * translation_to_corner * scale_by_width,
+            rotation_and_translation_to_center * translation_to_corner * scale_by_width,
         );
         self.bottom.set_transformation(transformation);
 
         // Update left line
         let translation_to_corner = Mat3::from_translation(self.bottom_left);
         let transformation = to_3d_transformation(
-            translation_to_center * rotation * translation_to_corner * scale_by_height,
+            rotation_and_translation_to_center * translation_to_corner * scale_by_height,
         );
         self.left.set_transformation(transformation);
     }
