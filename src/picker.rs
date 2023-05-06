@@ -2,7 +2,7 @@
 
 use three_d_asset::{Camera, PixelPoint, Vec3};
 
-use crate::{Context, DepthMaterial, Geometry};
+use crate::{ColorMaterial, Context, DepthMaterial, Geometry};
 
 ///
 /// A trait that allows for objects to be picked in a collection of gemetries
@@ -20,7 +20,7 @@ pub trait Pick {
         &self,
         camera: &Camera,
         pixel: impl Into<PixelPoint> + Copy,
-        geometries: impl IntoIterator<Item = impl Geometry>,
+        geometries: &[&dyn Geometry],
     ) -> Option<Self::PickResult>;
 }
 
@@ -34,7 +34,7 @@ pub struct LocationPicker {
 
 impl LocationPicker {
     ///
-    /// Create a new instance of the DepthPicker.
+    /// Create a new instance of the [LocationPicker].
     ///
     pub fn new(context: &Context) -> Self {
         Self {
@@ -127,8 +127,117 @@ impl Pick for LocationPicker {
         &self,
         camera: &Camera,
         pixel: impl Into<PixelPoint> + Copy,
-        geometries: impl IntoIterator<Item = impl Geometry>,
+        geometries: &[&dyn Geometry],
     ) -> Option<Vec3> {
+        let pos = camera.position_at_pixel(pixel);
+        let dir = camera.view_direction_at_pixel(pixel);
+        self.ray_intersect(
+            pos + dir * camera.z_near(),
+            dir,
+            camera.z_far() - camera.z_near(),
+            geometries,
+        )
+    }
+}
+
+///
+/// A picker that returns the index of the picked object from the slice of geomerties passed to the pick method
+///
+pub struct ObjectPicker {
+    context: Context,
+}
+
+impl ObjectPicker {
+    ///
+    /// Creates a new instance of the ObjectPicker
+    ///
+    pub fn new(context: &Context) -> Self {
+        Self {
+            context: context.clone(),
+        }
+    }
+
+    ///
+    /// Finds the closest intersection between a ray starting at the given position in the given direction and the given geometries.
+    /// Returns ```None``` if no geometry was hit before the given maximum depth.
+    ///
+    fn ray_intersect(
+        &self,
+        position: Vec3,
+        direction: Vec3,
+        max_depth: f32,
+        geometries: &[&dyn Geometry],
+    ) -> Option<usize> {
+        use crate::core::*;
+        let viewport = Viewport::new_at_origin(1, 1);
+        let up = if direction.dot(vec3(1.0, 0.0, 0.0)).abs() > 0.99 {
+            direction.cross(vec3(0.0, 1.0, 0.0))
+        } else {
+            direction.cross(vec3(1.0, 0.0, 0.0))
+        };
+        let camera = Camera::new_orthographic(
+            viewport,
+            position,
+            position + direction * max_depth,
+            up,
+            0.01,
+            0.0,
+            max_depth,
+        );
+        let mut texture = Texture2D::new_empty::<Vec4>(
+            &self.context,
+            viewport.width,
+            viewport.height,
+            Interpolation::Nearest,
+            Interpolation::Nearest,
+            None,
+            Wrapping::ClampToEdge,
+            Wrapping::ClampToEdge,
+        );
+        let mut depth_texture = DepthTexture2D::new::<f32>(
+            &self.context,
+            viewport.width,
+            viewport.height,
+            Wrapping::ClampToEdge,
+            Wrapping::ClampToEdge,
+        );
+        let color = RenderTarget::new(
+            texture.as_color_target(None),
+            depth_texture.as_depth_target(),
+        )
+        .clear(ClearState::color_and_depth(1.0, 1.0, 1.0, 1.0, 1.0))
+        .write(|| {
+            for (i, geometry) in geometries.iter().enumerate() {
+                // TODO:Fix color precision issues which occur because color is normalized
+                // when sent to shaders which may not return the original color. This could
+                // lead to wrong object being picked.
+                let color = i.try_into().expect("Too many objects");
+                let color_material = ColorMaterial {
+                    color,
+                    ..Default::default()
+                };
+                geometry.render_with_material(&color_material, &camera, &[]);
+            }
+        })
+        .read_color::<Vec4>()[0];
+        let picked_color = Color::from_rgba_slice(&[color.x, color.y, color.z, color.w]);
+        if picked_color == Color::WHITE {
+            return None;
+        } else {
+            return Some(picked_color.into());
+        }
+    }
+}
+
+impl Pick for ObjectPicker {
+    type PickResult = usize;
+
+    fn pick(
+        &self,
+        camera: &Camera,
+        pixel: impl Into<PixelPoint> + Copy,
+        geometries: &[&dyn Geometry],
+    ) -> Option<Self::PickResult> {
         let pos = camera.position_at_pixel(pixel);
         let dir = camera.view_direction_at_pixel(pixel);
         self.ray_intersect(

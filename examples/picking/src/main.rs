@@ -65,7 +65,14 @@ pub async fn run() {
             } = event
             {
                 if *button == MouseButton::Left {
-                    if let Some(pick) = depth_picker.pick(&camera, position, &monkey) {
+                    if let Some(pick) = depth_picker.pick(
+                        &camera,
+                        position,
+                        &monkey
+                            .iter()
+                            .map(|m| m as &dyn Geometry)
+                            .collect::<Vec<_>>(),
+                    ) {
                         pick_mesh.set_transformation(Mat4::from_translation(pick));
                         change = true;
                     }
