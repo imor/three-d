@@ -13,6 +13,9 @@ pub mod context;
 
 pub mod core;
 
+pub mod picker;
+pub use picker::*;
+
 pub mod renderer;
 pub use renderer::*;
 
