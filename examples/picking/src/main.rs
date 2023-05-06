@@ -52,6 +52,7 @@ pub async fn run() {
     monkey
         .iter_mut()
         .for_each(|m| m.material.render_states.cull = Cull::Back);
+    let depth_picker = LocationPicker::new(&context);
 
     // main loop
     window.render_loop(move |mut frame_input| {
@@ -64,7 +65,7 @@ pub async fn run() {
             } = event
             {
                 if *button == MouseButton::Left {
-                    if let Some(pick) = pick(&context, &camera, position, &monkey) {
+                    if let Some(pick) = depth_picker.pick(&camera, position, &monkey) {
                         pick_mesh.set_transformation(Mat4::from_translation(pick));
                         change = true;
                     }
