@@ -46,6 +46,7 @@ pub use circle::*;
 
 use crate::core::*;
 use crate::renderer::*;
+use crate::OrientedBoundingBox2D;
 
 pub use three_d_asset::{
     Geometry as CpuGeometry, Indices, KeyFrameAnimation, KeyFrames, PointCloud, Positions,
@@ -93,6 +94,13 @@ pub trait Geometry {
     fn aabb(&self) -> AxisAlignedBoundingBox;
 
     ///
+    /// Returns the [OrientedBoundingBox2D] for this geometry in the global coordinate system.
+    ///
+    fn obb(&self) -> OrientedBoundingBox2D {
+        OrientedBoundingBox2D::default()
+    }
+
+    ///
     /// For updating the animation of this geometry if it is animated, if not, this method does nothing.
     /// The time parameter should be some continious time, for example the time since start.
     ///
@@ -123,6 +131,10 @@ impl<T: Geometry + ?Sized> Geometry for &T {
     fn aabb(&self) -> AxisAlignedBoundingBox {
         (*self).aabb()
     }
+
+    fn obb(&self) -> OrientedBoundingBox2D {
+        (*self).obb()
+    }
 }
 
 impl<T: Geometry + ?Sized> Geometry for &mut T {
@@ -148,6 +160,10 @@ impl<T: Geometry + ?Sized> Geometry for &mut T {
 
     fn aabb(&self) -> AxisAlignedBoundingBox {
         (**self).aabb()
+    }
+
+    fn obb(&self) -> OrientedBoundingBox2D {
+        (**self).obb()
     }
 }
 
@@ -181,6 +197,10 @@ impl<T: Geometry> Geometry for Box<T> {
     fn aabb(&self) -> AxisAlignedBoundingBox {
         self.as_ref().aabb()
     }
+
+    fn obb(&self) -> OrientedBoundingBox2D {
+        self.as_ref().obb()
+    }
 }
 
 impl<T: Geometry> Geometry for std::rc::Rc<T> {
@@ -212,6 +232,10 @@ impl<T: Geometry> Geometry for std::rc::Rc<T> {
 
     fn aabb(&self) -> AxisAlignedBoundingBox {
         self.as_ref().aabb()
+    }
+
+    fn obb(&self) -> OrientedBoundingBox2D {
+        self.as_ref().obb()
     }
 }
 
@@ -245,6 +269,10 @@ impl<T: Geometry> Geometry for std::sync::Arc<T> {
     fn aabb(&self) -> AxisAlignedBoundingBox {
         self.as_ref().aabb()
     }
+
+    fn obb(&self) -> OrientedBoundingBox2D {
+        self.as_ref().obb()
+    }
 }
 
 impl<T: Geometry> Geometry for std::cell::RefCell<T> {
@@ -276,6 +304,10 @@ impl<T: Geometry> Geometry for std::cell::RefCell<T> {
 
     fn aabb(&self) -> AxisAlignedBoundingBox {
         self.borrow().aabb()
+    }
+
+    fn obb(&self) -> OrientedBoundingBox2D {
+        self.borrow().obb()
     }
 }
 
@@ -310,6 +342,10 @@ impl<T: Geometry> Geometry for std::sync::RwLock<T> {
 
     fn aabb(&self) -> AxisAlignedBoundingBox {
         self.read().unwrap().aabb()
+    }
+
+    fn obb(&self) -> OrientedBoundingBox2D {
+        self.read().unwrap().obb()
     }
 }
 

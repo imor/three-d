@@ -1,4 +1,4 @@
-use crate::renderer::*;
+use crate::{renderer::*, OrientedBoundingBox2D};
 
 ///
 /// A rectangle 2D geometry which can be rendered using the [camera2d] camera.
@@ -109,6 +109,10 @@ impl Geometry for Rectangle {
             (center - 0.5 * vec2(self.width, self.height)).extend(0.0),
             (center + 0.5 * vec2(self.width, self.height)).extend(0.0),
         ])
+    }
+
+    fn obb(&self) -> OrientedBoundingBox2D {
+        OrientedBoundingBox2D::new(self.width, self.height, self.center, self.rotation)
     }
 }
 

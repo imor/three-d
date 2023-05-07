@@ -1,4 +1,4 @@
-use crate::renderer::*;
+use crate::{renderer::*, OrientedBoundingBox2D};
 
 ///
 /// A combination of a [Geometry] and a [Material] which implements [Object].
@@ -63,6 +63,10 @@ impl<G: Geometry, M: Material> Geometry for Gm<G, M> {
             color_texture,
             depth_texture,
         )
+    }
+
+    fn obb(&self) -> OrientedBoundingBox2D {
+        self.geometry.obb()
     }
 }
 

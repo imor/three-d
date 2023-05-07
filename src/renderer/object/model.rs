@@ -1,4 +1,4 @@
-use crate::renderer::*;
+use crate::{renderer::*, OrientedBoundingBox2D};
 pub use three_d_asset::Model as CpuModel;
 
 ///
@@ -73,8 +73,13 @@ impl<M: Material> Geometry for ModelPart<M> {
     fn aabb(&self) -> AxisAlignedBoundingBox {
         self.gm.aabb()
     }
+
     fn animate(&mut self, time: f32) {
         self.gm.animate(time)
+    }
+
+    fn obb(&self) -> OrientedBoundingBox2D {
+        self.gm.obb()
     }
 }
 impl<M: Material> Object for ModelPart<M> {

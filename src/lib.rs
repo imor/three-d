@@ -16,6 +16,9 @@ pub mod core;
 pub mod picker;
 pub use picker::*;
 
+pub mod obb2d;
+pub use obb2d::*;
+
 pub mod renderer;
 pub use renderer::*;
 
