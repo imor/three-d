@@ -78,7 +78,7 @@ impl Outline {
 
     fn update(&mut self) {
         let scale_by_width = Mat3::from_nonuniform_scale(self.width, 1.0);
-        let scale_by_height = Mat3::from_nonuniform_scale(self.height, 1.0);
+        let scale_by_height = Mat3::from_nonuniform_scale(1.0, self.height);
         let translation_to_center = Mat3::from_translation(self.center.into());
         let rotation = Mat3::from_angle_z(self.rotation);
         let rotation_and_translation_to_center = translation_to_center * rotation;
